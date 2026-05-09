@@ -22,7 +22,7 @@ export function NavLink(props: Omit<ComponentProps<typeof Link>, 'className'>) {
     <Link
       {...props}
       className={cn(
-        'p-2 text-sm font-medium outline-none',
+        'p-2 text-[1rem] font-medium outline-none md:text-sm',
         'text-gray-500 hover:text-black focus-visible:text-black',
         'transition-colors duration-300 ease-in-out',
         pathname === props.href ? 'text-black' : 'text-gray-500'

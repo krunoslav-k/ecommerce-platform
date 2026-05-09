@@ -13,7 +13,7 @@ export default function AdminLayout({
         <NavLink href="/admin/users">Customers</NavLink>
         <NavLink href="/admin/orders">Orders</NavLink>
       </Nav>
-      <div className="container space-y-2 space-x-2">{children}</div>
+      <div className="">{children}</div>
     </>
   );
 }
