@@ -1,0 +1,15 @@
+import PageHeader from '../../_components/PageHeader';
+import ProductForm from '../_components/ProductForm';
+
+export default function NewProductPage() {
+  return (
+    <>
+      <PageHeader
+        title="Create product"
+        subtitle="Add a new product"
+      ></PageHeader>
+
+      <ProductForm />
+    </>
+  );
+}
