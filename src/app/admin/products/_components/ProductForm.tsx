@@ -15,6 +15,7 @@ import { formatCurrency } from '@/lib/formatters';
 import { useActionState, useState } from 'react';
 import { addProduct } from '../../_actions/products';
 import { useFormStatus } from 'react-dom';
+import ImageUploader from './ImageUploader';
 
 type ProductFormProps = {
   categories: {
@@ -103,8 +104,7 @@ export default function ProductForm({ categories }: ProductFormProps) {
 
         {/* IMAGES */}
         <div className="space-y-2">
-          <Label>Images</Label>
-          <Input type="file" name="images" multiple accept="image/*" required />
+          <ImageUploader />
           <ErrorMessage error={state.errors?.images} />
         </div>
       </div>
