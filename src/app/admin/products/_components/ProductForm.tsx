@@ -12,100 +12,120 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/formatters';
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import { addProduct } from '../../_actions/products';
+import { useFormStatus } from 'react-dom';
 
-export default function ProductForm() {
-  const [priceInCents, setPriceInCents] = useState<string>('');
-  const categories = [
-    { name: 'laptops', id: '0' },
-    { name: 'phones', id: '1' },
-  ]; // dummy data for testing UI
+type ProductFormProps = {
+  categories: {
+    id: string;
+    name: string;
+  }[];
+};
+
+export default function ProductForm({ categories }: ProductFormProps) {
+  const [priceInCents, setPriceInCents] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+
+  const [state, formAction] = useActionState(addProduct, {});
 
   return (
-    <form action={addProduct} className="space-y-8">
+    <form action={formAction} className="space-y-8">
       <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* NAME */}
         <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
-          <Input id="name" name="name" required />
+          <Label>Name</Label>
+          <Input name="name" required />
+          <ErrorMessage error={state.errors?.name} />
         </div>
 
+        {/* SLUG */}
         <div className="space-y-2">
-          <Label htmlFor="slug">Slug</Label>
-          <Input id="slug" name="slug" required />
+          <Label>Slug</Label>
+          <Input name="slug" required />
+          <ErrorMessage error={state.errors?.slug} />
         </div>
 
+        {/* STOCK */}
         <div className="space-y-2">
-          <Label htmlFor="stock">Stock</Label>
+          <Label>Stock</Label>
+          <Input type="number" min="0" name="stock" required />
+          <ErrorMessage error={state.errors?.stock} />
+        </div>
+
+        {/* DESCRIPTION */}
+        <div className="space-y-2">
+          <Label>Description</Label>
+          <Textarea name="description" required />
+          <ErrorMessage error={state.errors?.description} />
+        </div>
+
+        {/* PRICE */}
+        <div className="space-y-2">
+          <Label>Price (€)</Label>
           <Input
             type="number"
-            step="1"
             min="0"
-            id="stock"
-            name="stock"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="description">Description</Label>
-          <Textarea id="description" name="description" required />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="priceInCents">Price in cents</Label>
-          <Input
-            type="number"
-            step="1"
-            min="0"
-            id="priceInCents"
-            name="priceInCents"
             value={priceInCents}
             onChange={(e) => setPriceInCents(e.target.value)}
+            name="priceInCents"
             required
           />
-          <p className="ml-2.5 text-sm text-gray-500">
+          <p className="text-sm text-gray-500">
             {formatCurrency(priceInCents ? Number(priceInCents) / 100 : 0)}
           </p>
+          <ErrorMessage error={state.errors?.priceInCents} />
         </div>
 
+        {/* CATEGORY */}
         <div className="space-y-2">
-          <Label htmlFor="categoryId">Category</Label>
-
-          <Select name="categoryId">
+          <Label>Category</Label>
+          <Select
+            name="categoryId"
+            value={categoryId}
+            onValueChange={setCategoryId}
+          >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
 
-            <SelectContent className="p-1.5">
-              {categories.map((category) => (
-                <SelectItem
-                  key={category.id}
-                  value={category.id}
-                  className="p-1.5"
-                >
-                  {category.name}
+            <SelectContent>
+              {categories.map((c) => (
+                <SelectItem key={c.id} value={c.id}>
+                  {c.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+          <input type="hidden" name="categoryId" value={categoryId} />
+          <ErrorMessage error={state.errors?.categoryId} />
         </div>
 
+        {/* IMAGES */}
         <div className="space-y-2">
-          <Label htmlFor="images">Images</Label>
-
-          <Input
-            type="file"
-            id="images"
-            name="images"
-            multiple
-            accept="image/*"
-            required
-          />
+          <Label>Images</Label>
+          <Input type="file" name="images" multiple accept="image/*" required />
+          <ErrorMessage error={state.errors?.images} />
         </div>
       </div>
 
-      <Button type="submit">Create product</Button>
+      <SubmitButton />
     </form>
+  );
+}
+
+function ErrorMessage({ error }: { error?: string[] }) {
+  if (!error?.length) return null;
+
+  return <p className="text-sm text-red-500">{error[0]}</p>;
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={pending}>
+      {pending ? 'Creating...' : 'Create product'}
+    </Button>
   );
 }

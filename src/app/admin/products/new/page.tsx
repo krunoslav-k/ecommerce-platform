@@ -1,7 +1,14 @@
+import { db } from '@/db/prisma';
 import PageHeader from '../../_components/PageHeader';
 import ProductForm from '../_components/ProductForm';
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  const categories = await db.category.findMany({
+    orderBy: {
+      name: 'asc',
+    },
+  });
+
   return (
     <>
       <PageHeader
@@ -9,7 +16,7 @@ export default function NewProductPage() {
         subtitle="Add a new product"
       ></PageHeader>
 
-      <ProductForm />
+      <ProductForm categories={categories} />
     </>
   );
 }
