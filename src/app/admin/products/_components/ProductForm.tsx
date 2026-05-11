@@ -13,6 +13,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/formatters';
 import { useState } from 'react';
+import { addProduct } from '../../_actions/products';
 
 export default function ProductForm() {
   const [priceInCents, setPriceInCents] = useState<string>('');
@@ -22,7 +23,7 @@ export default function ProductForm() {
   ]; // dummy data for testing UI
 
   return (
-    <form className="space-y-8">
+    <form action={addProduct} className="space-y-8">
       <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
