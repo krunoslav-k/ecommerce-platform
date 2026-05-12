@@ -3,19 +3,16 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+//prettier-ignore
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/formatters';
 import { useActionState, useState } from 'react';
 import { addProduct } from '../../_actions/products';
 import { useFormStatus } from 'react-dom';
 import ImageUploader from './ImageUploader';
+import generateSlug from '@/lib/generateSlug';
+import ErrorMessage from './FormError';
 
 type ProductFormProps = {
   categories: {
@@ -29,8 +26,24 @@ export default function ProductForm({ categories }: ProductFormProps) {
   const [categoryId, setCategoryId] = useState('');
   const [productName, setProductName] = useState('');
   const [slug, setSlug] = useState('');
-  const [state, formAction] = useActionState(addProduct, {});
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+  const [state, formAction] = useActionState(addProduct, {});
+
+  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+
+    setProductName(value);
+
+    if (!isSlugManuallyEdited) {
+      setSlug(generateSlug(value));
+    }
+    setIsSlugManuallyEdited(false);
+  }
+
+  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setIsSlugManuallyEdited(true);
+    setSlug(generateSlug(e.target.value));
+  }
 
   return (
     <form action={formAction} className="space-y-8">
@@ -42,14 +55,7 @@ export default function ProductForm({ categories }: ProductFormProps) {
             id="name"
             name="name"
             value={productName}
-            onChange={(e) => {
-              const value = e.target.value;
-              setProductName(value);
-              if (!isSlugManuallyEdited) {
-                setSlug(generateSlug(value));
-              }
-              setIsSlugManuallyEdited(false);
-            }}
+            onChange={handleNameChange}
             required
           />
           <ErrorMessage error={state.errors?.name} />
@@ -63,10 +69,7 @@ export default function ProductForm({ categories }: ProductFormProps) {
             name="slug"
             required
             value={slug}
-            onChange={(e) => {
-              setIsSlugManuallyEdited(true);
-              setSlug(generateSlug(e.target.value));
-            }}
+            onChange={handleSlugChange}
           />
           <ErrorMessage error={state.errors?.slug} />
         </div>
@@ -139,12 +142,6 @@ export default function ProductForm({ categories }: ProductFormProps) {
   );
 }
 
-function ErrorMessage({ error }: { error?: string[] }) {
-  if (!error?.length) return null;
-
-  return <p className="text-sm text-red-500">{error[0]}</p>;
-}
-
 function SubmitButton() {
   const { pending } = useFormStatus();
 
@@ -153,18 +150,4 @@ function SubmitButton() {
       {pending ? 'Creating...' : 'Create product'}
     </Button>
   );
-}
-
-function generateSlug(name: string) {
-  return name
-    .toLowerCase()
-    .trim()
-    .replace(/č/g, 'c')
-    .replace(/ć/g, 'c')
-    .replace(/š/g, 's')
-    .replace(/ž/g, 'z')
-    .replace(/đ/g, 'dj')
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/--+/g, '-');
 }
