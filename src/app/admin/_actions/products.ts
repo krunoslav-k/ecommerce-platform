@@ -5,7 +5,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { revalidatePath } from 'next/cache';
 
 const imageSchema = z
   .instanceof(File, { message: 'Image is required' })

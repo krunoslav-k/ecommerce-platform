@@ -27,52 +27,77 @@ type ProductFormProps = {
 export default function ProductForm({ categories }: ProductFormProps) {
   const [priceInCents, setPriceInCents] = useState('');
   const [categoryId, setCategoryId] = useState('');
-
+  const [productName, setProductName] = useState('');
+  const [slug, setSlug] = useState('');
   const [state, formAction] = useActionState(addProduct, {});
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
 
   return (
     <form action={formAction} className="space-y-8">
       <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
         {/* NAME */}
         <div className="space-y-2">
-          <Label>Name</Label>
-          <Input name="name" required />
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            name="name"
+            value={productName}
+            onChange={(e) => {
+              const value = e.target.value;
+              setProductName(value);
+              if (!isSlugManuallyEdited) {
+                setSlug(generateSlug(value));
+              }
+              setIsSlugManuallyEdited(false);
+            }}
+            required
+          />
           <ErrorMessage error={state.errors?.name} />
         </div>
 
         {/* SLUG */}
         <div className="space-y-2">
-          <Label>Slug</Label>
-          <Input name="slug" required />
+          <Label htmlFor="slug">Slug</Label>
+          <Input
+            id="slug"
+            name="slug"
+            required
+            value={slug}
+            onChange={(e) => {
+              setIsSlugManuallyEdited(true);
+              setSlug(generateSlug(e.target.value));
+            }}
+          />
           <ErrorMessage error={state.errors?.slug} />
         </div>
 
         {/* STOCK */}
         <div className="space-y-2">
-          <Label>Stock</Label>
-          <Input type="number" min="0" name="stock" required />
+          <Label htmlFor="stock">Stock</Label>
+          <Input id="stock" type="number" min="0" name="stock" required />
           <ErrorMessage error={state.errors?.stock} />
         </div>
 
         {/* DESCRIPTION */}
         <div className="space-y-2">
-          <Label>Description</Label>
-          <Textarea name="description" required />
+          <Label htmlFor="description">Description</Label>
+          <Textarea id="description" name="description" required />
           <ErrorMessage error={state.errors?.description} />
         </div>
 
         {/* PRICE */}
         <div className="space-y-2">
-          <Label>Price (€)</Label>
+          <Label htmlFor="priceInCents">Price</Label>
           <Input
             type="number"
             min="0"
             value={priceInCents}
             onChange={(e) => setPriceInCents(e.target.value)}
+            id="priceInCents"
             name="priceInCents"
             required
           />
-          <p className="text-sm text-gray-500">
+          <p className="ml-2 text-sm text-gray-500">
             {formatCurrency(priceInCents ? Number(priceInCents) / 100 : 0)}
           </p>
           <ErrorMessage error={state.errors?.priceInCents} />
@@ -90,9 +115,9 @@ export default function ProductForm({ categories }: ProductFormProps) {
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
 
-            <SelectContent>
+            <SelectContent className="mt-1 p-1.5">
               {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id}>
+                <SelectItem key={c.id} value={c.id} className="p-1.5">
                   {c.name}
                 </SelectItem>
               ))}
@@ -128,4 +153,18 @@ function SubmitButton() {
       {pending ? 'Creating...' : 'Create product'}
     </Button>
   );
+}
+
+function generateSlug(name: string) {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/č/g, 'c')
+    .replace(/ć/g, 'c')
+    .replace(/š/g, 's')
+    .replace(/ž/g, 'z')
+    .replace(/đ/g, 'dj')
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/--+/g, '-');
 }

@@ -57,6 +57,7 @@ export default function ImageUploader() {
             key={index}
             className="relative h-25 w-25 overflow-hidden rounded-lg border"
           >
+            {/* eslint-disable-next-line @next/next/no-img-element*/}
             <img
               src={image.preview}
               alt={image.file.name}
