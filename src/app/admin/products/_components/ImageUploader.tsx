@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { mergeDuplicateImages } from '@/lib/mergeDuplicateImages';
 import { ImagePlus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -23,7 +24,7 @@ export default function ImageUploader() {
       preview: URL.createObjectURL(file),
     }));
 
-    setImages((prev) => [...prev, ...newImages]);
+    setImages((prev) => mergeDuplicateImages(prev, newImages));
   }
 
   useEffect(() => {
