@@ -1,20 +1,33 @@
 # E-commerce Platform
 
-Moderna e-commerce aplikacija za prodaju tehnoloških proizvoda izrađena u Next.js-u. Fokus je na performansama, čistom UI-u i realnom shopping iskustvu.
+A modern full-stack e-commerce application built with Next.js, featuring both a customer-facing storefront and a fully functional admin dashboard (CMS). The project focuses on performance, clean UI, and a realistic shopping experience similar to production-grade online stores, while also demonstrating practical content management and backend-driven product administration.
 
 ## Tech Stack
 
-- **Frontend:** Next.js, React, TypeScript, TailwindCSS
-- **State Management:**
-- **Backend/Baza:**
-- **Plaćanje:**
+- **Frontend:** Next.js (App Router), React, TypeScript
+- **Styling & UI:** TailwindCSS, shadcn/ui
+- **Backend:** Next.js Server Actions
+- **Database:** SQLite (via Prisma ORM)
+- **ORM:** Prisma (type-safe database access and schema management)
+- **Validation:** Zod (schema-based validation for forms and server inputs)
 
-## Značajke (Features)
+## Features
 
-- [ ] Pregled proizvoda i kategorija
-- [ ] Product detail stranica
-- [ ] Add to cart (state + local storage)
-- [ ] Checkout proces
-- [ ] Admin dashboard (CMS za proizvode i narudžbe)
+- Admin dashboard (CMS for products and orders)
+- Product creation with image upload
 
-Projekt u početnoj fazi (setup i planiranje)
+## Planned Features
+
+### Admin
+
+- View all products with detailed information
+- Edit and delete products
+- View customers
+- View all orders and order details
+
+### Storefront
+
+- Product and category browsing
+- Product detail page
+- Add to cart functionality (state + local storage)
+- Checkout process
