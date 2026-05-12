@@ -15,17 +15,7 @@ type ImagePreview = {
 export default function ImageUploader() {
   const [images, setImages] = useState<ImagePreview[]>([]);
   const imagesRef = useRef<ImagePreview[]>([]);
-
-  function handleImagesChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (!e.target.files) return;
-
-    const newImages = Array.from(e.target.files).map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-
-    setImages((prev) => mergeDuplicateImages(prev, newImages));
-  }
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     imagesRef.current = images;
@@ -36,6 +26,35 @@ export default function ImageUploader() {
       imagesRef.current.forEach((image) => URL.revokeObjectURL(image.preview));
     };
   }, []);
+
+  function handleImagesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (!e.target.files) return;
+
+    const newImages = Array.from(e.target.files).map((file) => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+
+    setImages((prev) => {
+      const merged = mergeDuplicateImages(prev, newImages);
+
+      syncInputFiles(merged.map((img) => img.file));
+
+      return merged;
+    });
+  }
+
+  function syncInputFiles(files: File[]) {
+    const dataTransfer = new DataTransfer();
+
+    files.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+
+    if (inputRef.current) {
+      inputRef.current.files = dataTransfer.files;
+    }
+  }
 
   return (
     <div className="space-y-4.5">
@@ -52,6 +71,7 @@ export default function ImageUploader() {
         </label>
 
         <Input
+          ref={inputRef}
           type="file"
           id="images"
           name="images"
