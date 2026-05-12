@@ -13,6 +13,8 @@ import { useFormStatus } from 'react-dom';
 import ImageUploader from './ImageUploader';
 import ErrorMessage from './FormError';
 import { useProductForm } from '@/hooks/useProductForm';
+import { cn } from '@/lib/utils';
+import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';
 
 type ProductFormProps = {
   categories: {
@@ -25,11 +27,13 @@ export default function ProductForm({ categories }: ProductFormProps) {
   const [priceInCents, setPriceInCents] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [state, formAction] = useActionState(addProduct, {});
+
   const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
     useProductForm();
+  const { markAsModified, getFieldError } = useFieldErrorHiding(state);
 
   return (
-    <form action={formAction} className="space-y-8">
+    <form action={formAction} noValidate className="space-y-8">
       <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2 lg:grid-cols-3">
         {/* NAME */}
         <div className="space-y-2">
@@ -38,10 +42,14 @@ export default function ProductForm({ categories }: ProductFormProps) {
             id="name"
             name="name"
             value={productName}
-            onChange={handleNameChange}
+            onChange={(e) => {
+              handleNameChange(e);
+              markAsModified('name');
+              markAsModified('slug');
+            }}
             required
           />
-          <ErrorMessage error={state.errors?.name} />
+          <ErrorMessage error={getFieldError('name')} />
         </div>
 
         {/* SLUG */}
@@ -52,11 +60,14 @@ export default function ProductForm({ categories }: ProductFormProps) {
             name="slug"
             required
             value={slug}
-            onChange={handleSlugChange}
+            onChange={(e) => {
+              handleSlugChange(e);
+              markAsModified('slug');
+            }}
           />
-          <ErrorMessage error={state.errors?.slug} />
+          <ErrorMessage error={getFieldError('slug')} />
 
-          {slugExists && !state.errors?.slug?.length && (
+          {slugExists && (
             <p className="ml-2 text-xs text-red-500">
               This slug already exists
             </p>
@@ -70,15 +81,27 @@ export default function ProductForm({ categories }: ProductFormProps) {
         {/* STOCK */}
         <div className="space-y-2">
           <Label htmlFor="stock">Stock</Label>
-          <Input id="stock" type="number" min="0" name="stock" required />
-          <ErrorMessage error={state.errors?.stock} />
+          <Input
+            id="stock"
+            type="number"
+            min="0"
+            name="stock"
+            required
+            onChange={() => markAsModified('stock')}
+          />
+          <ErrorMessage error={getFieldError('stock')} />
         </div>
 
         {/* DESCRIPTION */}
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" name="description" required />
-          <ErrorMessage error={state.errors?.description} />
+          <Textarea
+            id="description"
+            name="description"
+            required
+            onChange={() => markAsModified('description')}
+          />
+          <ErrorMessage error={getFieldError('description')} />
         </div>
 
         {/* PRICE */}
@@ -88,7 +111,10 @@ export default function ProductForm({ categories }: ProductFormProps) {
             type="number"
             min="0"
             value={priceInCents}
-            onChange={(e) => setPriceInCents(e.target.value)}
+            onChange={(e) => {
+              setPriceInCents(e.target.value);
+              markAsModified('priceInCents');
+            }}
             id="priceInCents"
             name="priceInCents"
             required
@@ -96,18 +122,25 @@ export default function ProductForm({ categories }: ProductFormProps) {
           <p className="ml-2 text-sm text-gray-500">
             {formatCurrency(priceInCents ? Number(priceInCents) / 100 : 0)}
           </p>
-          <ErrorMessage error={state.errors?.priceInCents} />
+          <ErrorMessage error={getFieldError('priceInCents')} />
         </div>
 
         {/* CATEGORY */}
         <div className="space-y-2">
           <Label>Category</Label>
           <Select
-            name="categoryId"
-            value={categoryId}
-            onValueChange={setCategoryId}
+            value={categoryId || ''}
+            onValueChange={(val) => {
+              setCategoryId(val);
+              markAsModified('categoryId');
+            }}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger
+              className={cn(
+                'w-full',
+                getFieldError('categoryId') && 'border-red-500'
+              )}
+            >
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
 
@@ -120,14 +153,17 @@ export default function ProductForm({ categories }: ProductFormProps) {
             </SelectContent>
           </Select>
           <input type="hidden" name="categoryId" value={categoryId} />
-          <ErrorMessage error={state.errors?.categoryId} />
+          <ErrorMessage error={getFieldError('categoryId')} />
         </div>
       </div>
 
       {/* IMAGES */}
-      <div className="w-full space-y-2">
+      <div
+        className="w-full space-y-2"
+        onChange={() => markAsModified('images')}
+      >
         <ImageUploader />
-        <ErrorMessage error={state.errors?.images} />
+        <ErrorMessage error={getFieldError('images')} />
       </div>
 
       <div className="mt-2">

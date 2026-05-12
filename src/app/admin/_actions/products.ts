@@ -26,9 +26,13 @@ const addProductSchema = z.object({
 
   priceInCents: z.coerce.number().int().min(1, 'Price must be at least 1 cent'),
 
-  stock: z.coerce.number().int().min(0, 'Stock cannot be negative'),
+  stock: z
+    .string()
+    .min(1, 'Stock is required')
+    .transform((val) => Number(val))
+    .pipe(z.number().int().min(0, 'Stock cannot be negative')),
 
-  categoryId: z.string().min(1, 'Category is required'),
+  categoryId: z.string().trim().min(1, 'Category is required'),
 
   images: z.array(imageSchema).min(1, 'At least one image is required'),
 });
