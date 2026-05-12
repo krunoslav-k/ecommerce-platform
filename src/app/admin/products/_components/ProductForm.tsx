@@ -11,8 +11,8 @@ import { useActionState, useState } from 'react';
 import { addProduct } from '../../_actions/products';
 import { useFormStatus } from 'react-dom';
 import ImageUploader from './ImageUploader';
-import generateSlug from '@/lib/generateSlug';
 import ErrorMessage from './FormError';
+import { useProductForm } from '@/hooks/useProductForm';
 
 type ProductFormProps = {
   categories: {
@@ -24,26 +24,9 @@ type ProductFormProps = {
 export default function ProductForm({ categories }: ProductFormProps) {
   const [priceInCents, setPriceInCents] = useState('');
   const [categoryId, setCategoryId] = useState('');
-  const [productName, setProductName] = useState('');
-  const [slug, setSlug] = useState('');
-  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const [state, formAction] = useActionState(addProduct, {});
-
-  function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const value = e.target.value;
-
-    setProductName(value);
-
-    if (!isSlugManuallyEdited) {
-      setSlug(generateSlug(value));
-    }
-    setIsSlugManuallyEdited(false);
-  }
-
-  function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setIsSlugManuallyEdited(true);
-    setSlug(generateSlug(e.target.value));
-  }
+  const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
+    useProductForm();
 
   return (
     <form action={formAction} className="space-y-8">
@@ -72,6 +55,16 @@ export default function ProductForm({ categories }: ProductFormProps) {
             onChange={handleSlugChange}
           />
           <ErrorMessage error={state.errors?.slug} />
+
+          {slugExists && !state.errors?.slug?.length && (
+            <p className="ml-2 text-xs text-red-500">
+              This slug already exists
+            </p>
+          )}
+
+          {!slugExists && slug && (
+            <p className="ml-2 text-xs text-green-600">Slug is available</p>
+          )}
         </div>
 
         {/* STOCK */}
