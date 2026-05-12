@@ -15,7 +15,7 @@ export default function AdminLayout({
         <NavLink href="/admin/users">Customers</NavLink>
         <NavLink href="/admin/orders">Orders</NavLink>
       </Nav>
-      <div className="p-4 lg:px-14">{children}</div>
+      <div className="p-4 px-14">{children}</div>
     </>
   );
 }

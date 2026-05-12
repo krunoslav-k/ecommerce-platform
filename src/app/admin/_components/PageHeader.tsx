@@ -1,6 +1,6 @@
 type PageHeaderProps = {
   title: string;
-  number?: number;
+  number?: number | string;
   subtitle: string;
 };
 
