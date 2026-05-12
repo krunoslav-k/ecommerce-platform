@@ -129,15 +129,17 @@ export default function ProductForm({ categories }: ProductFormProps) {
           <input type="hidden" name="categoryId" value={categoryId} />
           <ErrorMessage error={state.errors?.categoryId} />
         </div>
-
-        {/* IMAGES */}
-        <div className="space-y-2">
-          <ImageUploader />
-          <ErrorMessage error={state.errors?.images} />
-        </div>
       </div>
 
-      <SubmitButton />
+      {/* IMAGES */}
+      <div className="w-full space-y-2">
+        <ImageUploader />
+        <ErrorMessage error={state.errors?.images} />
+      </div>
+
+      <div className="mt-2">
+        <SubmitButton />
+      </div>
     </form>
   );
 }
@@ -146,7 +148,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
 
   return (
-    <Button type="submit" disabled={pending}>
+    <Button type="submit" disabled={pending} className="hover:bg-gray-700">
       {pending ? 'Creating...' : 'Create product'}
     </Button>
   );

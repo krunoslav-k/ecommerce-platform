@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { X } from 'lucide-react';
+import { ImagePlus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 type ImagePreview = {
@@ -37,9 +37,18 @@ export default function ImageUploader() {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="space-y-2">
+    <div className="space-y-4.5">
+      <div className="space-y-4">
         <Label htmlFor="images">Images</Label>
+
+        <label
+          htmlFor="images"
+          className="flex w-fit cursor-pointer items-center justify-center gap-2 rounded-md bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:bg-gray-100"
+        >
+          <span className="flex items-center justify-center gap-1.5">
+            <ImagePlus size={18} /> Upload images
+          </span>
+        </label>
 
         <Input
           type="file"
@@ -48,10 +57,11 @@ export default function ImageUploader() {
           multiple
           accept="image/*"
           onChange={handleImagesChange}
+          className="hidden"
         />
       </div>
 
-      <div className="flex w-full flex-wrap items-center gap-2">
+      <div className="grid grid-cols-[repeat(auto-fill,100px)] gap-3">
         {images.map((image, index) => (
           <div
             key={index}
