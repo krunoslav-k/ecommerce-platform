@@ -3,7 +3,7 @@
 import { db } from '@/db/prisma';
 import fs from 'fs/promises';
 import path from 'path';
-import { redirect } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { z } from 'zod';
 
 const imageSchema = z
@@ -121,4 +121,9 @@ export async function addProduct(
   });
 
   redirect('/admin/products');
+}
+
+export async function deleteProduct(id: string) {
+  const product = await db.product.delete({ where: { id } });
+  if (product === null) return notFound();
 }

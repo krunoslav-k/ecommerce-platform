@@ -20,6 +20,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import DeleteDropdownItem from './_components/DeleteDropdownItem';
 
 export default async function AdminProducts() {
   const [productCount] = await Promise.all([db.product.count()]);
@@ -130,9 +131,10 @@ async function ProductsTable() {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
-                      <Trash /> Delete
-                    </DropdownMenuItem>
+                    <DeleteDropdownItem
+                      id={product.id}
+                      disabled={product._count.orderItems > 0}
+                    />
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>
