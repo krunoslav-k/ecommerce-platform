@@ -15,14 +15,14 @@ import ErrorMessage from './FormError';
 import { useProductForm } from '@/hooks/useProductForm';
 import { cn } from '@/lib/utils';
 import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';
-import { Product } from '@prisma/client';
+import { Product, ProductImage } from '@prisma/client';
 
 type ProductFormProps = {
   categories: {
     id: string;
     name: string;
   }[];
-  product?: Product | null;
+  product?: (Product & { images: { id: string; url: string }[] }) | null;
 };
 
 export default function ProductForm({ categories, product }: ProductFormProps) {
@@ -168,7 +168,7 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
         className="w-full space-y-2"
         onChange={() => markAsModified('images')}
       >
-        <ImageUploader />
+        <ImageUploader initialImages={product?.images} />
         <ErrorMessage error={getFieldError('images')} />
       </div>
 

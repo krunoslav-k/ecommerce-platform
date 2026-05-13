@@ -3,17 +3,28 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { mergeDuplicateImages } from '@/lib/mergeDuplicateImages';
 import { ImagePlus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
+type InitialImage = {
+  id: string;
+  url: string;
+};
+
 type ImagePreview = {
-  file: File;
+  id?: string;
+  file?: File;
   preview: string;
 };
 
-export default function ImageUploader() {
-  const [images, setImages] = useState<ImagePreview[]>([]);
+export default function ImageUploader({
+  initialImages = [],
+}: {
+  initialImages?: InitialImage[];
+}) {
+  const [images, setImages] = useState<ImagePreview[]>(() =>
+    initialImages.map((img) => ({ id: img.id, preview: img.url }))
+  );
   const imagesRef = useRef<ImagePreview[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -23,7 +34,9 @@ export default function ImageUploader() {
 
   useEffect(() => {
     return () => {
-      imagesRef.current.forEach((image) => URL.revokeObjectURL(image.preview));
+      imagesRef.current.forEach((image) => {
+        if (!image.id) URL.revokeObjectURL(image.preview);
+      });
     };
   }, []);
 
@@ -36,21 +49,42 @@ export default function ImageUploader() {
     }));
 
     setImages((prev) => {
-      const merged = mergeDuplicateImages(prev, newImages);
+      const existingImages = prev.filter((img) => img.id);
+      const previousNewImages = prev.filter((img) => !img.id);
 
-      syncInputFiles(merged.map((img) => img.file));
+      const mergedNew = [...previousNewImages, ...newImages];
 
-      return merged;
+      const finalImages = [...existingImages, ...mergedNew];
+
+      syncInputFiles(mergedNew.map((img) => img.file as File));
+
+      return finalImages;
+    });
+  }
+
+  function handleRemoveImage(indexToRemove: number) {
+    setImages((prev) => {
+      const imageToRemove = prev[indexToRemove];
+
+      if (!imageToRemove.id) {
+        URL.revokeObjectURL(imageToRemove.preview);
+      }
+
+      const updatedImages = prev.filter((_, i) => i !== indexToRemove);
+
+      const remainingNewFiles = updatedImages
+        .filter((img) => img.file)
+        .map((img) => img.file as File);
+
+      syncInputFiles(remainingNewFiles);
+
+      return updatedImages;
     });
   }
 
   function syncInputFiles(files: File[]) {
     const dataTransfer = new DataTransfer();
-
-    files.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
-
+    files.forEach((file) => dataTransfer.items.add(file));
     if (inputRef.current) {
       inputRef.current.files = dataTransfer.files;
     }
@@ -80,18 +114,29 @@ export default function ImageUploader() {
           onChange={handleImagesChange}
           className="hidden"
         />
+
+        {images.map((img) =>
+          img.id ? (
+            <input
+              key={img.id}
+              type="hidden"
+              name="existingImageIds"
+              value={img.id}
+            />
+          ) : null
+        )}
       </div>
 
       <div className="grid grid-cols-[repeat(auto-fill,100px)] gap-3">
         {images.map((image, index) => (
           <div
-            key={index}
+            key={image.id || index}
             className="relative h-25 w-25 overflow-hidden rounded-lg border"
           >
             {/* eslint-disable-next-line @next/next/no-img-element*/}
             <img
               src={image.preview}
-              alt={image.file.name}
+              alt={image.file?.name || 'Product image'}
               className="h-full w-full object-cover"
             />
 
@@ -100,11 +145,7 @@ export default function ImageUploader() {
               variant="destructive"
               size="icon-sm"
               className="absolute top-1 right-1 z-10"
-              onClick={() => {
-                URL.revokeObjectURL(image.preview);
-
-                setImages((prev) => prev.filter((_, i) => i !== index));
-              }}
+              onClick={() => handleRemoveImage(index)}
             >
               <X className="h-4 w-4" />
             </Button>
