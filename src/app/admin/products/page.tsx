@@ -12,7 +12,7 @@ import {
 import { db } from '@/db/prisma';
 import { formatCurrency } from '@/lib/formatters';
 import Image from 'next/image';
-import { EllipsisVertical, ScanEye, SquarePen, Trash } from 'lucide-react';
+import { EllipsisVertical, ScanEye, SquarePen } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,

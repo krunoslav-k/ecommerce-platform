@@ -124,6 +124,25 @@ export async function addProduct(
 }
 
 export async function deleteProduct(id: string) {
-  const product = await db.product.delete({ where: { id } });
-  if (product === null) return notFound();
+  const product = await db.product.findUnique({
+    where: { id },
+    include: {
+      images: true,
+    },
+  });
+
+  if (!product) return notFound();
+
+  for (const image of product.images) {
+    const filePath = path.join(process.cwd(), 'public', image.url);
+    try {
+      await fs.unlink(filePath);
+    } catch (err) {
+      console.error('Failed to delete image:', filePath, err);
+    }
+  }
+
+  await db.product.delete({
+    where: { id },
+  });
 }
