@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/formatters';
 import { useActionState, useState } from 'react';
-import { addProduct } from '../../_actions/products';
+import { addProduct, editProduct } from '../../_actions/products';
 import { useFormStatus } from 'react-dom';
 import ImageUploader from './ImageUploader';
 import ErrorMessage from './FormError';
@@ -30,10 +30,14 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
     product?.priceInCents.toString()
   );
   const [categoryId, setCategoryId] = useState(product?.categoryId);
-  const [state, formAction] = useActionState(addProduct, {});
 
   const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
     useProductForm(product?.name, product?.slug);
+  const action = product?.id ? editProduct.bind(null, product.id) : addProduct;
+  const [state, formAction] = useActionState(
+    product?.id ? editProduct.bind(null, product.id) : addProduct,
+    {}
+  );
   const { markAsModified, getFieldError } = useFieldErrorHiding(state);
 
   return (
@@ -173,18 +177,24 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
       </div>
 
       <div className="mt-2">
-        <SubmitButton />
+        <SubmitButton isEditing={!!product} />
       </div>
     </form>
   );
 }
 
-function SubmitButton() {
+function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
 
   return (
     <Button type="submit" disabled={pending} className="hover:bg-gray-700">
-      {pending ? 'Creating...' : 'Create product'}
+      {pending
+        ? isEditing
+          ? 'Updating...'
+          : 'Creating...'
+        : isEditing
+          ? 'Update product'
+          : 'Create product'}
     </Button>
   );
 }
