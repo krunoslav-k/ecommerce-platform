@@ -3,11 +3,11 @@
 import generateSlug from '@/lib/generateSlug';
 import { useEffect, useState } from 'react';
 
-export function useProductForm() {
-  const [productName, setProductName] = useState('');
-  const [slug, setSlug] = useState('');
+export function useProductForm(enteredName?: string, enteredSlug?: string) {
+  const [productName, setProductName] = useState(enteredName || '');
+  const [slug, setSlug] = useState(enteredSlug || '');
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
-  const [slugExists, setSlugExists] = useState(false);
+  const [slugExists, setSlugExists] = useState(enteredSlug ? true : false);
 
   useEffect(() => {
     if (!slug) return;

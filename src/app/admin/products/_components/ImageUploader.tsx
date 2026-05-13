@@ -66,7 +66,7 @@ export default function ImageUploader() {
           className="flex w-fit cursor-pointer items-center justify-center gap-2 rounded-md bg-gray-50 px-3 py-2 text-sm font-medium text-gray-700 transition hover:border-gray-400 hover:bg-gray-100"
         >
           <span className="flex items-center justify-center gap-1.5">
-            <ImagePlus size={18} /> Upload images
+            <ImagePlus size={18} /> {'Upload images'}
           </span>
         </label>
 

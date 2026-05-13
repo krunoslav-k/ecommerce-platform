@@ -15,21 +15,25 @@ import ErrorMessage from './FormError';
 import { useProductForm } from '@/hooks/useProductForm';
 import { cn } from '@/lib/utils';
 import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';
+import { Product } from '@prisma/client';
 
 type ProductFormProps = {
   categories: {
     id: string;
     name: string;
   }[];
+  product?: Product | null;
 };
 
-export default function ProductForm({ categories }: ProductFormProps) {
-  const [priceInCents, setPriceInCents] = useState('');
-  const [categoryId, setCategoryId] = useState('');
+export default function ProductForm({ categories, product }: ProductFormProps) {
+  const [priceInCents, setPriceInCents] = useState(
+    product?.priceInCents.toString()
+  );
+  const [categoryId, setCategoryId] = useState(product?.categoryId);
   const [state, formAction] = useActionState(addProduct, {});
 
   const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
-    useProductForm();
+    useProductForm(product?.name, product?.slug);
   const { markAsModified, getFieldError } = useFieldErrorHiding(state);
 
   return (
@@ -88,6 +92,7 @@ export default function ProductForm({ categories }: ProductFormProps) {
             name="stock"
             required
             onChange={() => markAsModified('stock')}
+            defaultValue={product?.stock}
           />
           <ErrorMessage error={getFieldError('stock')} />
         </div>
@@ -100,6 +105,7 @@ export default function ProductForm({ categories }: ProductFormProps) {
             name="description"
             required
             onChange={() => markAsModified('description')}
+            defaultValue={product?.description}
           />
           <ErrorMessage error={getFieldError('description')} />
         </div>
