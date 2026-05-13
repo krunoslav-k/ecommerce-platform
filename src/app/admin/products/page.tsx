@@ -12,7 +12,14 @@ import {
 import { db } from '@/db/prisma';
 import { formatCurrency } from '@/lib/formatters';
 import Image from 'next/image';
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical, ScanEye, SquarePen, Trash } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default async function AdminProducts() {
   const [productCount] = await Promise.all([db.product.count()]);
@@ -99,15 +106,35 @@ async function ProductsTable() {
 
               <TableCell>{product.stock}</TableCell>
 
+              {/* DROPDOWN ACTIONS */}
               <TableCell>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mr-4 h-8 w-8 opacity-60 hover:bg-gray-100 hover:opacity-100"
-                >
-                  <EllipsisVertical size={18} />
-                  <span className="sr-only">Actions</span>
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="outline-none focus:outline-none">
+                    <EllipsisVertical
+                      size={18}
+                      className="mr-4 opacity-60 transition-all duration-200 ease-in-out hover:scale-110 hover:opacity-100"
+                    />
+                    <span className="sr-only">Actions</span>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="mt-2 mr-4 p-1.5">
+                    <DropdownMenuItem className="mb-1">
+                      <ScanEye /> View details
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href={`/admin/products/${product.id}/edit`}
+                        className="flex items-center gap-1.5"
+                      >
+                        <SquarePen /> Edit
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem variant="destructive">
+                      <Trash /> Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           );
