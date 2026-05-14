@@ -7,13 +7,15 @@ export function useProductForm(enteredName?: string, enteredSlug?: string) {
   const [productName, setProductName] = useState(enteredName || '');
   const [slug, setSlug] = useState(enteredSlug || '');
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
-  const [slugExists, setSlugExists] = useState(enteredSlug ? true : false);
+  const [apiSlugExists, setApiSlugExists] = useState(false);
+  const slugExists = slug !== enteredSlug && apiSlugExists;
 
   useEffect(() => {
-    if (!slug) return;
+    if (!slug || slug === enteredSlug) {
+      return;
+    }
 
     const controller = new AbortController();
-
     const timeout = setTimeout(async () => {
       try {
         const res = await fetch(`/api/check-slug?slug=${slug}`, {
@@ -22,7 +24,7 @@ export function useProductForm(enteredName?: string, enteredSlug?: string) {
 
         const data = await res.json();
 
-        setSlugExists(data.exists);
+        setApiSlugExists(data.exists);
       } catch (err) {}
     }, 400);
 
@@ -30,7 +32,7 @@ export function useProductForm(enteredName?: string, enteredSlug?: string) {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [slug]);
+  }, [slug, enteredSlug]);
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
@@ -39,7 +41,6 @@ export function useProductForm(enteredName?: string, enteredSlug?: string) {
 
     if (!isSlugManuallyEdited) {
       setSlug(generateSlug(value));
-      setSlugExists(false);
     }
     setIsSlugManuallyEdited(false);
   }
@@ -49,8 +50,6 @@ export function useProductForm(enteredName?: string, enteredSlug?: string) {
 
     const value = generateSlug(e.target.value);
     setSlug(value);
-
-    setSlugExists(false);
   }
 
   return { productName, handleNameChange, slug, handleSlugChange, slugExists };

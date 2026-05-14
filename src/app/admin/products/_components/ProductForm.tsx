@@ -15,7 +15,7 @@ import ErrorMessage from './FormError';
 import { useProductForm } from '@/hooks/useProductForm';
 import { cn } from '@/lib/utils';
 import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';
-import { Product, ProductImage } from '@prisma/client';
+import { Product } from '@prisma/client';
 
 type ProductFormProps = {
   categories: {
@@ -33,7 +33,6 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
 
   const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
     useProductForm(product?.name, product?.slug);
-  const action = product?.id ? editProduct.bind(null, product.id) : addProduct;
   const [state, formAction] = useActionState(
     product?.id ? editProduct.bind(null, product.id) : addProduct,
     {}
@@ -75,7 +74,7 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
           />
           <ErrorMessage error={getFieldError('slug')} />
 
-          {slugExists && (
+          {slugExists && slug !== product?.slug && (
             <p className="ml-2 text-xs text-red-500">
               This slug already exists
             </p>
