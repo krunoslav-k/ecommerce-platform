@@ -25,6 +25,7 @@ export function useProductForm(enteredName?: string, enteredSlug?: string) {
         const data = await res.json();
 
         setApiSlugExists(data.exists);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {}
     }, 400);
 
