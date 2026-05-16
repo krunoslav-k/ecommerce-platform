@@ -4,12 +4,32 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ComponentProps } from 'react';
+import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+import { Button } from './ui/button';
 
 export default function Nav({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <nav className="flex justify-center gap-2 px-4 py-2 text-sm">
-        {children}
+      <nav className="flex min-h-16 items-center justify-between px-4 py-2">
+        <div className="flex-1"></div>
+
+        <div className="flex justify-center gap-2 text-sm">{children}</div>
+
+        <div className="flex flex-1 items-center justify-end gap-4">
+          <Show when="signed-out">
+            <SignInButton>
+              <Button variant="outline">Sign In</Button>
+            </SignInButton>
+
+            <SignUpButton>
+              <Button className="text-sm hover:bg-gray-700">Sign Up</Button>
+            </SignUpButton>
+          </Show>
+
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
+        </div>
       </nav>
       <hr />
     </>
