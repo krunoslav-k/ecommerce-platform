@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { ClerkProvider } from '@clerk/nextjs';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 const geistSans = Geist({
   variable: '--font-sans',
@@ -42,7 +43,9 @@ export default function RootLayout({
       )}
     >
       <body className="flex min-h-full flex-col">
-        <ClerkProvider>{children}</ClerkProvider>
+        <ClerkProvider>
+          <TooltipProvider delayDuration={1000}>{children}</TooltipProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
