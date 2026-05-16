@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { notFound, redirect } from 'next/navigation';
 import { z } from 'zod';
+import { revalidatePath } from 'next/cache';
 
 const imageSchema = z
   .instanceof(File, { message: 'Image is required' })
@@ -136,6 +137,8 @@ export async function addProduct(
     },
   });
 
+  revalidatePath('/');
+  revalidatePath('/products');
   redirect('/admin/products');
 }
 
@@ -161,6 +164,10 @@ export async function deleteProduct(id: string) {
   await db.product.delete({
     where: { id },
   });
+
+  revalidatePath('/');
+  revalidatePath('/products');
+  redirect('/admin/products');
 }
 
 export type EditProductState = {
@@ -286,5 +293,7 @@ export async function editProduct(
     },
   });
 
+  revalidatePath('/');
+  revalidatePath('/products');
   redirect('/admin/products');
 }

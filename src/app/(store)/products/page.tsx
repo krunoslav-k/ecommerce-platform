@@ -2,14 +2,19 @@ import { ProductCardSkeleton } from '@/components/ProductCard';
 import { Suspense } from 'react';
 import { ProductSuspense } from '../page';
 import { db } from '@/db/prisma';
+import { cache } from '@/lib/cache';
 
-function getProducts() {
-  return db.product.findMany({
-    where: { stock: { gt: 0 } },
-    orderBy: { name: 'asc' },
-    include: { images: { take: 1 } },
-  });
-}
+const getProducts = cache(
+  () => {
+    return db.product.findMany({
+      where: { stock: { gt: 0 } },
+      orderBy: { name: 'asc' },
+      include: { images: { take: 1 } },
+    });
+  },
+  ['/products', 'getProducts'],
+  { revalidate: 60 * 60 * 24 }
+);
 
 export default function ProductsPage() {
   return (

@@ -1,28 +1,37 @@
 import ProductCard, { ProductCardSkeleton } from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { db } from '@/db/prisma';
+import { cache } from '@/lib/cache';
 import { Product, ProductImage } from '@prisma/client';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-function getMostPopularProducts() {
-  return db.product.findMany({
-    where: { stock: { gt: 0 } },
-    orderBy: { orderItems: { _count: 'desc' } },
-    include: { images: { take: 1 } },
-    take: 6,
-  });
-}
+const getMostPopularProducts = cache(
+  () => {
+    return db.product.findMany({
+      where: { stock: { gt: 0 } },
+      orderBy: { orderItems: { _count: 'desc' } },
+      include: { images: { take: 1 } },
+      take: 6,
+    });
+  },
+  ['/', 'getMostPopularProducts'],
+  { revalidate: 60 * 60 * 24 }
+);
 
-function getNewestProducts() {
-  return db.product.findMany({
-    where: { stock: { gt: 0 } },
-    orderBy: { createdAt: 'desc' },
-    include: { images: { take: 1 } },
-    take: 6,
-  });
-}
+const getNewestProducts = cache(
+  () => {
+    return db.product.findMany({
+      where: { stock: { gt: 0 } },
+      orderBy: { createdAt: 'desc' },
+      include: { images: { take: 1 } },
+      take: 6,
+    });
+  },
+  ['/', 'getNewestProducts'],
+  { revalidate: 60 * 60 * 24 }
+);
 
 export default function Home() {
   return (
