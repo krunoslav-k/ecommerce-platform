@@ -12,7 +12,7 @@ export default function StoreLayout({
       <Nav>
         <NavLink href="/">Home</NavLink>
         <NavLink href="/categories">Categories</NavLink>
-        <NavLink href="/productss">Products</NavLink>
+        <NavLink href="/products">Products</NavLink>
         <NavLink href="/my-orders">My Orders</NavLink>
         <NavLink href="/admin">Admin</NavLink> {/* placeholder button */}
       </Nav>
