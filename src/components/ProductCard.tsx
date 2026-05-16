@@ -56,3 +56,26 @@ export default function ProductCard({
     </Card>
   );
 }
+
+export function ProductCardSkeleton() {
+  return (
+    <Card className="flex flex-col overflow-hidden p-4">
+      <div className="flex animate-pulse flex-col gap-4">
+        <div className="aspect-4/3 w-full rounded-xl bg-gray-200" />
+
+        <div className="h-6 w-2/3 rounded-md bg-gray-200" />
+
+        <div className="space-y-2">
+          <div className="h-4 w-full rounded-md bg-gray-200" />
+          <div className="da h-4 w-3/4 rounded-md bg-gray-200" />
+        </div>
+
+        <div className="mt-2 flex items-center justify-between">
+          <div className="h-5 w-20 rounded-md bg-gray-200" />
+
+          <div className="h-10 w-10 rounded-lg bg-gray-200" />
+        </div>
+      </div>
+    </Card>
+  );
+}

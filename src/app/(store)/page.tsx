@@ -1,6 +1,7 @@
-import ProductCard from '@/components/ProductCard';
+import ProductCard, { ProductCardSkeleton } from '@/components/ProductCard';
 import { db } from '@/db/prisma';
 import { Product, ProductImage } from '@prisma/client';
+import { Suspense } from 'react';
 
 function getMostPopularProducts() {
   return db.product.findMany({
@@ -60,7 +61,7 @@ type ProductGridSectionProps = {
   title: string;
 };
 
-async function ProductGridSection({
+function ProductGridSection({
   productsFetcher,
   title,
 }: ProductGridSectionProps) {
@@ -70,14 +71,34 @@ async function ProductGridSection({
         <h2 className="text-2xl font-bold">{title}</h2>
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        {(await productsFetcher()).map((product) => (
-          <ProductCard
-            key={product.id}
-            {...product}
-            imagePath={product.images[0]?.url}
-          />
-        ))}
+        <Suspense
+          fallback={
+            <>
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+              <ProductCardSkeleton />
+            </>
+          }
+        >
+          <ProductSuspense productsFetcher={productsFetcher} />
+        </Suspense>
       </div>
     </div>
   );
+}
+
+async function ProductSuspense({
+  productsFetcher,
+}: {
+  productsFetcher: () => Promise<(Product & { images: ProductImage[] })[]>;
+}) {
+  return (await productsFetcher()).map((product) => (
+    <ProductCard
+      key={product.id}
+      {...product}
+      imagePath={product.images[0]?.url}
+    />
+  ));
 }
