@@ -27,9 +27,9 @@ type ProductFormProps = {
 
 export default function ProductForm({ categories, product }: ProductFormProps) {
   const [priceInCents, setPriceInCents] = useState(
-    product?.priceInCents.toString()
+    product?.priceInCents.toString() ?? ''
   );
-  const [categoryId, setCategoryId] = useState(product?.categoryId);
+  const [categoryId, setCategoryId] = useState(product?.categoryId ?? '');
 
   const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
     useProductForm(product?.name, product?.slug);
