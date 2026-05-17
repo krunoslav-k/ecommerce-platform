@@ -7,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card';
-import { Button } from './ui/button';
-import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import AddToCartButton from '@/app/(store)/_components/AddToCartButton';
 
 type ProductCardProps = {
+  productId: string;
   name: string;
   description: string;
   priceInCents: number;
@@ -20,6 +19,7 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({
+  productId,
   name,
   description,
   priceInCents,
@@ -40,18 +40,8 @@ export default function ProductCard({
 
       <CardFooter className="flex grow items-center justify-between">
         <div>{formatCurrency(priceInCents / 100)}</div>
-        <div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="icon">
-                <ShoppingCart />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add to cart</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
+
+        <AddToCartButton productId={productId} />
       </CardFooter>
     </Card>
   );

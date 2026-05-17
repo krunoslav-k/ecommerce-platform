@@ -11,71 +11,123 @@ datasource db {
   provider = "sqlite"
 }
 
-model User {
-  id  String  @id @default(uuid())
-  name String
-  email String  @unique
-  orders  Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  COMPLETED
+  CANCELLED
 }
 
 model Category {
-  id String @id @default(uuid())
-  name String
-  slug String @unique
-  products Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+
+  products  Product[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Product {
-  id           String @id @default(uuid())
-  name         String
-  slug         String @unique 
-  description  String
-  priceInCents Int
-  stock Int
+  id            String         @id @default(uuid())
 
-  categoryId  String
-  category    Category       @relation(fields: [categoryId], references: [id])
-  
-  images      ProductImage[]
-  orderItems  OrderItem[]
-  
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  name          String
+  slug          String         @unique
+  description   String
+
+  priceInCents  Int
+  stock         Int
+
+  categoryId    String
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  images        ProductImage[]
+
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([categoryId])
 }
 
 model ProductImage {
-  id        String   @id @default(uuid())
-  url       String   
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id          String      @id @default(uuid())
+
+  url         String
+
+  productId   String
+  product     Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id            String      @id @default(uuid())
+
+  clerkUserId   String      @unique
+
+  items         CartItem[]
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model CartItem {
+  id            String      @id @default(uuid())
+
+  cartId        String
+  productId     String
+
+  quantity      Int         @default(1)
+
+  cart          Cart        @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime    @default(now())
+
+  @@unique([cartId, productId])
+
+  @@index([cartId])
+  @@index([productId])
 }
 
 model Order {
-  id         String      @id @default(uuid())
-  status     String      @default("PENDING") // PENDING, PAID, SHIPPED, COMPLETED
+  id                String          @id @default(uuid())
+
+  clerkUserId       String
+
+  status            OrderStatus     @default(PENDING)
+
   totalInCents      Int
 
-  userId     String
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  orderItems OrderItem[]
-  
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  stripeSessionId   String?         @unique
+
+  orderItems        OrderItem[]
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([clerkUserId])
 }
 
 model OrderItem {
-  id        String  @id @default(uuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  
-  productId String
-  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
-  
-  quantity  Int
-  pricePaidInCents     Int 
+  id                  String      @id @default(uuid())
+
+  orderId             String
+  productId           String
+
+  quantity            Int
+
+  pricePaidInCents    Int
+
+  order               Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  product             Product     @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@index([productId])
 }

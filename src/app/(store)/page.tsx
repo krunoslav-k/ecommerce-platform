@@ -91,6 +91,7 @@ export async function ProductSuspense({
     <ProductCard
       key={product.id}
       {...product}
+      productId={product.id}
       imagePath={product.images[0]?.url}
     />
   ));

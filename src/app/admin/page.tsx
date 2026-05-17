@@ -20,7 +20,8 @@ async function getSalesData() {
   };
 }
 
-async function getUserData() {
+{
+  /*async function getUserData() {
   const [userCount, orderData] = await Promise.all([
     db.user.count(),
     db.order.aggregate({
@@ -35,6 +36,7 @@ async function getUserData() {
         ? 0
         : (orderData._sum.totalInCents || 0) / userCount / 100,
   };
+}*/
 }
 
 async function getProductData() {
@@ -47,9 +49,9 @@ async function getProductData() {
 }
 
 export default async function AdminDashboard() {
-  const [salesData, userData, productData] = await Promise.all([
+  const [salesData, productData] = await Promise.all([
     getSalesData(),
-    getUserData(),
+    //getUserData(),
     getProductData(),
   ]);
 
@@ -62,12 +64,12 @@ export default async function AdminDashboard() {
       />
       <DashboardCard
         title="Customers"
-        description={`${userData.userCount} customers`}
-        body={`Each customer spends ${formatCurrency(userData.averageSpentPerUser)} on average`}
+        description={`0 customers`}
+        body={`Each customer spends 10€ on average`} //dummy data for testing
       />
       <DashboardCard
         title="Products in stock"
-        description={`${productData.outOfStock} products out of stock`}
+        description={`${productData.outOfStock} products out of stock`} //dummy data for testing
         body={`${productData.inStock}`}
       />
     </div>

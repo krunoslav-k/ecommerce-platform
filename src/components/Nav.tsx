@@ -7,7 +7,12 @@ import { ComponentProps } from 'react';
 import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
 import { Button } from './ui/button';
 
-export default function Nav({ children }: { children: React.ReactNode }) {
+type NavProps = {
+  children: React.ReactNode;
+  cartButton: React.ReactNode;
+};
+
+export default function Nav({ children, cartButton }: NavProps) {
   return (
     <>
       <nav className="flex min-h-16 items-center justify-between px-4 py-2">
@@ -27,6 +32,7 @@ export default function Nav({ children }: { children: React.ReactNode }) {
           </Show>
 
           <Show when="signed-in">
+            {cartButton}
             <UserButton />
           </Show>
         </div>

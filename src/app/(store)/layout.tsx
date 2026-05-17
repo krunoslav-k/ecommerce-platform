@@ -1,4 +1,5 @@
 import Nav, { NavLink } from '@/components/Nav';
+import CartNavbarButton from './_components/CartNavButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,7 @@ export default function StoreLayout({
 }>) {
   return (
     <>
-      <Nav>
+      <Nav cartButton={<CartNavbarButton></CartNavbarButton>}>
         <NavLink href="/">Home</NavLink>
         <NavLink href="/categories">Categories</NavLink>
         <NavLink href="/products">Products</NavLink>
