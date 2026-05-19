@@ -4,10 +4,10 @@ import { Input } from '@/components/ui/input';
 import { getCurrentUser } from '@/lib/auth';
 import { getCart } from '@/lib/cart';
 import { formatCurrency } from '@/lib/formatters';
-import { Minus, Plus, ShoppingBag, X } from 'lucide-react';
+import { Minus, Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { deleteItemFromCart, updateCartItemQuantity } from '../_actions/cart';
-import Link from 'next/link';
+import CheckoutButton from '../_components/CheckoutButton';
 
 export default async function CartPage() {
   const userId = await getCurrentUser();
@@ -170,15 +170,7 @@ function TotalSummaryCard({ subtotalInCents }: { subtotalInCents: number }) {
         </div>
       </div>
 
-      <Button
-        size="lg"
-        className="my-4 w-full bg-sky-700 text-white hover:bg-sky-800"
-        asChild
-      >
-        <Link href="/checkout">
-          <ShoppingBag /> Checkout
-        </Link>
-      </Button>
+      <CheckoutButton />
     </div>
   );
 }
