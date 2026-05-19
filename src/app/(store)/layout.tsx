@@ -17,7 +17,7 @@ export default function StoreLayout({
         <NavLink href="/my-orders">My Orders</NavLink>
         <NavLink href="/admin">Admin</NavLink> {/* placeholder button */}
       </Nav>
-      <div className="p-4 px-14">{children}</div>
+      <div className="flex flex-col p-4 px-14">{children}</div>
     </>
   );
 }
