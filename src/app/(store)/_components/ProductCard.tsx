@@ -6,7 +6,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
+} from '../../../components/ui/card';
 import Image from 'next/image';
 import AddToCartButton from '@/app/(store)/_components/AddToCartButton';
 import { db } from '@/db/prisma';

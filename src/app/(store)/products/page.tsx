@@ -1,8 +1,8 @@
-import { ProductCardSkeleton } from '@/components/ProductCard';
+import { ProductCardSkeleton } from '@/app/(store)/_components/ProductCard';
 import { Suspense } from 'react';
-import { ProductSuspense } from '../page';
 import { db } from '@/db/prisma';
 import { cache } from '@/lib/cache';
+import { ProductSuspense } from '../_components/ProductSuspense';
 
 const getProducts = cache(
   () => {

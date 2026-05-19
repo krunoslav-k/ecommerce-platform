@@ -1,4 +1,3 @@
-import ProductCard, { ProductCardSkeleton } from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { db } from '@/db/prisma';
 import { cache } from '@/lib/cache';
@@ -6,6 +5,8 @@ import { Product, ProductImage } from '@prisma/client';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import { ProductSuspense } from './_components/ProductSuspense';
+import { ProductCardSkeleton } from './_components/ProductCard';
 
 const getMostPopularProducts = cache(
   () => {
@@ -80,19 +81,4 @@ function ProductGridSection({
       </div>
     </div>
   );
-}
-
-export async function ProductSuspense({
-  productsFetcher,
-}: {
-  productsFetcher: () => Promise<(Product & { images: ProductImage[] })[]>;
-}) {
-  return (await productsFetcher()).map((product) => (
-    <ProductCard
-      key={product.id}
-      {...product}
-      productId={product.id}
-      imagePath={product.images[0]?.url}
-    />
-  ));
 }
