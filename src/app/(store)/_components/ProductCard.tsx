@@ -9,20 +9,7 @@ import {
 } from '../../../components/ui/card';
 import Image from 'next/image';
 import AddToCartButton from '@/app/(store)/_components/AddToCartButton';
-import { db } from '@/db/prisma';
-import { getCurrentUser } from '@/lib/auth';
-import { getCart } from '@/lib/cart';
-
-async function getQuantityOfProductInCart(productId: string) {
-  const userId = await getCurrentUser();
-  const cart = await getCart(userId);
-  if (!cart) return;
-
-  return await db.cartItem.findUnique({
-    where: { cartId_productId: { cartId: cart.id, productId } },
-    select: { quantity: true },
-  });
-}
+import { getQuantityOfProductInCart } from '../lib/products';
 
 type ProductCardProps = {
   productId: string;
@@ -90,5 +77,17 @@ export function ProductCardSkeleton() {
         </div>
       </div>
     </Card>
+  );
+}
+
+export function FiveProductCardSkeletons() {
+  return (
+    <>
+      <ProductCardSkeleton />
+      <ProductCardSkeleton />
+      <ProductCardSkeleton />
+      <ProductCardSkeleton />
+      <ProductCardSkeleton />
+    </>
   );
 }

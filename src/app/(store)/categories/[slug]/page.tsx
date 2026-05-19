@@ -1,9 +1,7 @@
 import { db } from '@/db/prisma';
-import { Suspense } from 'react';
-import { ProductCardSkeleton } from '../../_components/ProductCard';
-import { ProductSuspense } from '../../_components/ProductSuspense';
 import PageHeader from '@/app/admin/_components/PageHeader';
 import { getProductsByCategory } from '../../lib/products';
+import ProductGrid from '../../_components/ProductGrid';
 
 export default async function CategoryPage({
   params,
@@ -33,24 +31,7 @@ export default async function CategoryPage({
         title={category.name}
         subtitle="Explore all the products in this category"
       />
-
-      <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        <Suspense
-          fallback={
-            <>
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-            </>
-          }
-        >
-          <ProductSuspense
-            productsFetcher={() => getProductsByCategory(category.id)}
-          />
-        </Suspense>
-      </div>
+      <ProductGrid productsFetcher={() => getProductsByCategory(category.id)} />
     </div>
   );
 }

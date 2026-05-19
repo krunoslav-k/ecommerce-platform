@@ -1,5 +1,7 @@
 import { db } from '@/db/prisma';
+import { getCurrentUser } from '@/lib/auth';
 import { cache } from '@/lib/cache';
+import { getCart } from '@/lib/cart';
 
 export const getMostPopularProducts = cache(
   () => {
@@ -39,3 +41,14 @@ export const getProductsByCategory = (categoryId: string) =>
     [`categories/${categoryId}`, 'getProductsByCategory'],
     { revalidate: 60 * 60 * 24 }
   )();
+
+export async function getQuantityOfProductInCart(productId: string) {
+  const userId = await getCurrentUser();
+  const cart = await getCart(userId);
+  if (!cart) return;
+
+  return await db.cartItem.findUnique({
+    where: { cartId_productId: { cartId: cart.id, productId } },
+    select: { quantity: true },
+  });
+}

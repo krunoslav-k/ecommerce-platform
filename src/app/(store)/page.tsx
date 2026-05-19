@@ -2,10 +2,8 @@ import { Button } from '@/components/ui/button';
 import { Product, ProductImage } from '@prisma/client';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { Suspense } from 'react';
-import { ProductSuspense } from './_components/ProductSuspense';
-import { ProductCardSkeleton } from './_components/ProductCard';
 import { getMostPopularProducts, getNewestProducts } from './lib/products';
+import ProductGrid from './_components/ProductGrid';
 
 export default function Home() {
   return (
@@ -39,19 +37,8 @@ function ProductGridSection({
           </Link>
         </Button>
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        <Suspense
-          fallback={
-            <>
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-              <ProductCardSkeleton />
-            </>
-          }
-        >
-          <ProductSuspense productsFetcher={productsFetcher} />
-        </Suspense>
-      </div>
+
+      <ProductGrid productsFetcher={productsFetcher} />
     </div>
   );
 }
