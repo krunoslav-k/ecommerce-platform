@@ -46,51 +46,75 @@ export async function POST(req: Request) {
       return new Response('Cart not found', { status: 404 });
     }
 
-    const order = await db.order.create({
-      data: {
-        clerkUserId,
+    try {
+      await db.$transaction(async (tx) => {
+        for (const item of cart.items) {
+          const product = await tx.product.findUnique({
+            where: {
+              id: item.productId,
+            },
+          });
 
-        status: 'PAID',
+          if (!product) {
+            throw new Error('Product not found');
+          }
 
-        totalInCents: cart.items.reduce((acc, item) => {
-          return acc + item.product.priceInCents * item.quantity;
-        }, 0),
+          if (product.stock < item.quantity) {
+            throw new Error(`${product.name} does not have enough stock`);
+          }
+        }
 
-        stripeSessionId: session.id,
+        const order = await tx.order.create({
+          data: {
+            clerkUserId,
 
-        orderItems: {
-          create: cart.items.map((item) => ({
-            productId: item.productId,
+            status: 'PAID',
 
-            quantity: item.quantity,
+            totalInCents: cart.items.reduce((acc, item) => {
+              return acc + item.product.priceInCents * item.quantity;
+            }, 0),
 
-            pricePaidInCents: item.product.priceInCents,
-          })),
-        },
-      },
-    });
+            stripeSessionId: session.id,
 
-    for (const item of cart.items) {
-      await db.product.update({
-        where: {
-          id: item.productId,
-        },
+            orderItems: {
+              create: cart.items.map((item) => ({
+                productId: item.productId,
 
-        data: {
-          stock: {
-            decrement: item.quantity,
+                quantity: item.quantity,
+
+                pricePaidInCents: item.product.priceInCents,
+              })),
+            },
           },
-        },
+        });
+
+        for (const item of cart.items) {
+          await tx.product.update({
+            where: {
+              id: item.productId,
+            },
+
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+          });
+        }
+
+        await tx.cartItem.deleteMany({
+          where: {
+            cartId: cart.id,
+          },
+        });
+
+        console.log('Order created:', order.id);
       });
+    } catch (error) {
+      console.error(error);
+
+      return new Response('Not enough stock', { status: 400 });
     }
-
-    await db.cartItem.deleteMany({
-      where: {
-        cartId: cart.id,
-      },
-    });
-
-    console.log('Order created:', order.id);
   }
 
   return new Response(null, { status: 200 });

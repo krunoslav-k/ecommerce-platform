@@ -60,6 +60,7 @@ export default async function CartPage() {
                     </span>
                     <QuantityPicker
                       quantity={item.quantity}
+                      stock={item.product.stock}
                       productId={item.productId}
                     />
                   </div>
@@ -87,9 +88,11 @@ export default async function CartPage() {
 
 function QuantityPicker({
   quantity,
+  stock,
   productId,
 }: {
   quantity: number;
+  stock: number;
   productId: string;
 }) {
   return (
@@ -105,7 +108,10 @@ function QuantityPicker({
       </div>
 
       <form action={updateCartItemQuantity.bind(null, productId, quantity + 1)}>
-        <Button className="flex h-7 w-7 items-center justify-center bg-white transition-colors hover:bg-slate-50">
+        <Button
+          className="flex h-7 w-7 items-center justify-center bg-white transition-colors hover:bg-slate-50"
+          disabled={quantity === stock || quantity > stock}
+        >
           <Plus className="h-3.5 w-3.5 text-slate-600" />
         </Button>
       </form>

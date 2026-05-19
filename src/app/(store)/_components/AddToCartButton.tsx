@@ -11,15 +11,22 @@ import { addToCart } from '../_actions/cart';
 
 type AddToCartButtonProps = {
   productId: string;
+  productStock: number;
+  quantityOfProductInCart: number;
 };
 
-export default function AddToCartButton({ productId }: AddToCartButtonProps) {
+export default function AddToCartButton({
+  productId,
+  productStock,
+  quantityOfProductInCart,
+}: AddToCartButtonProps) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
           size="icon"
           className="hover:bg-gray-800"
+          disabled={quantityOfProductInCart >= productStock}
           onClick={() => addToCart(productId)}
         >
           <ShoppingCart />

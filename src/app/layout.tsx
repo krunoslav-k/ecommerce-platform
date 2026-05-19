@@ -4,6 +4,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { ClerkProvider } from '@clerk/nextjs';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({
   variable: '--font-sans',
@@ -46,6 +47,7 @@ export default function RootLayout({
         <ClerkProvider>
           <TooltipProvider delayDuration={1000}>{children}</TooltipProvider>
         </ClerkProvider>
+        <Toaster position="top-center" />
       </body>
     </html>
   );

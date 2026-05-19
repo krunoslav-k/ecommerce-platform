@@ -27,7 +27,15 @@ export async function createCheckoutSession() {
   });
 
   if (!cart || cart.items.length === 0) {
-    throw new Error('Cart is empty');
+    return { error: 'Cart is empty' };
+  }
+
+  for (const item of cart.items) {
+    if (item.product.stock < item.quantity) {
+      return {
+        error: `${item.product.name} does not have enough stock`,
+      };
+    }
   }
 
   const session = await stripe.checkout.sessions.create({
