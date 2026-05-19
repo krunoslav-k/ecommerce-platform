@@ -4,10 +4,12 @@ import { Input } from '@/components/ui/input';
 import { getCurrentUser } from '@/lib/auth';
 import { getCart } from '@/lib/cart';
 import { formatCurrency } from '@/lib/formatters';
-import { Minus, Plus, X } from 'lucide-react';
+import { Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { deleteItemFromCart, updateCartItemQuantity } from '../_actions/cart';
 import CheckoutButton from '../_components/CheckoutButton';
+import DeleteButton from '../_components/DeleteButton';
+import DeleteQuantityButton from '../_components/DeleteQuantityButton';
 
 export default async function CartPage() {
   const userId = await getCurrentUser();
@@ -98,9 +100,13 @@ function QuantityPicker({
   return (
     <div className="flex w-fit items-center overflow-hidden rounded-md border border-slate-200">
       <form action={updateCartItemQuantity.bind(null, productId, quantity - 1)}>
-        <Button className="flex h-7 w-7 items-center justify-center bg-white transition-colors hover:bg-slate-50">
-          <Minus className="h-3.5 w-3.5 text-slate-600" />
-        </Button>
+        {quantity > 1 ? (
+          <Button className="flex h-7 w-7 items-center justify-center bg-white transition-colors hover:bg-slate-50">
+            <Minus className="h-3.5 w-3.5 text-slate-600" />
+          </Button>
+        ) : (
+          <DeleteQuantityButton />
+        )}
       </form>
 
       <div className="flex h-7 w-8 items-center justify-center border-x border-slate-200 bg-slate-50 text-sm font-medium text-slate-900">
@@ -123,9 +129,7 @@ function RemoveFromCartButton({ productId }: { productId: string }) {
   return (
     <div className="cursor-pointer justify-self-end p-2 text-center md:col-start-7 md:px-2">
       <form action={deleteItemFromCart.bind(null, productId)}>
-        <Button type="submit" size="icon-sm" variant="destructive">
-          <X />
-        </Button>
+        <DeleteButton />
       </form>
     </div>
   );

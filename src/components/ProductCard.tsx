@@ -61,6 +61,7 @@ export default async function ProductCard({
 
         <AddToCartButton
           productId={productId}
+          productName={name}
           productStock={stock}
           quantityOfProductInCart={quantityOfProductInCart?.quantity ?? 0}
         />

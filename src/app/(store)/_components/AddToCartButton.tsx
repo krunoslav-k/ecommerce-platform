@@ -8,18 +8,26 @@ import {
 } from '@/components/ui/tooltip';
 import { ShoppingCart } from 'lucide-react';
 import { addToCart } from '../_actions/cart';
+import { toast } from 'sonner';
 
 type AddToCartButtonProps = {
   productId: string;
+  productName: string;
   productStock: number;
   quantityOfProductInCart: number;
 };
 
 export default function AddToCartButton({
   productId,
+  productName,
   productStock,
   quantityOfProductInCart,
 }: AddToCartButtonProps) {
+  function handleAddToCart(productId: string) {
+    addToCart(productId);
+    toast.success(`Item ${productName || ''} added to cart`);
+  }
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -27,7 +35,7 @@ export default function AddToCartButton({
           size="icon"
           className="hover:bg-gray-800"
           disabled={quantityOfProductInCart >= productStock}
-          onClick={() => addToCart(productId)}
+          onClick={() => handleAddToCart(productId)}
         >
           <ShoppingCart />
         </Button>
