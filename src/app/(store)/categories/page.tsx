@@ -1,8 +1,8 @@
-import PageHeader from '@/app/admin/_components/PageHeader';
 import { ProductCardSkeleton } from '@/app/(store)/_components/ProductCard';
 import { Suspense } from 'react';
 import { ProductSuspense } from '../_components/ProductSuspense';
 import { db } from '@/db/prisma';
+import TitleLink from '../_components/TitleLink';
 
 async function getProductsByCategory(categoryId: string) {
   return db.product.findMany({
@@ -31,7 +31,9 @@ export default async function CategoriesPage() {
     <div>
       {categories.map((category) => (
         <div key={category.id}>
-          <PageHeader title={category.name} subtitle="" />
+          <TitleLink href={`/categories/${category.slug}`}>
+            {category.name}
+          </TitleLink>
 
           <div className="mb-10 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
             <Suspense
