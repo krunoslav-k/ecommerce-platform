@@ -85,13 +85,14 @@ async function ProductsTable() {
       <TableBody>
         {products.map((product) => {
           return (
-            <TableRow key={product.id}>
+            <TableRow key={product.id} className="max-h-16">
               <TableCell>
                 <Image
                   src={product.images[0]?.url || '/placeholder.png'}
                   alt={product.name}
                   width={50}
                   height={50}
+                  className="h-12 w-12 rounded-md object-cover"
                 />
               </TableCell>
 
