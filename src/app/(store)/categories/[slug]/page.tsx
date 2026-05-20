@@ -1,4 +1,3 @@
-import { db } from '@/db/prisma';
 import PageHeader from '@/app/admin/_components/PageHeader';
 import { getProductsByCategory } from '../../lib/products';
 import ProductGrid from '../../_components/ProductGrid';

@@ -10,9 +10,11 @@ import {
 import Image from 'next/image';
 import AddToCartButton from '@/app/(store)/_components/AddToCartButton';
 import { getQuantityOfProductInCart } from '../lib/products';
+import Link from 'next/link';
 
 type ProductCardProps = {
   productId: string;
+  slug: string;
   name: string;
   description: string;
   priceInCents: number;
@@ -22,6 +24,7 @@ type ProductCardProps = {
 
 export default async function ProductCard({
   productId,
+  slug,
   name,
   description,
   priceInCents,
@@ -32,16 +35,20 @@ export default async function ProductCard({
 
   return (
     <Card className="flex flex-col overflow-hidden">
-      <CardHeader className="relative aspect-4/3 h-auto w-full">
-        <Image src={imagePath} alt={name} fill className="object-cover" />
-      </CardHeader>
+      <Link href={`/products/${slug}`}>
+        <div className="flex flex-col gap-4">
+          <CardHeader className="relative aspect-4/3 h-auto w-full">
+            <Image src={imagePath} alt={name} fill className="object-cover" />
+          </CardHeader>
 
-      <CardContent>
-        <CardTitle>{name}</CardTitle>
-        <CardDescription className="line-clamp-3">
-          {description}
-        </CardDescription>
-      </CardContent>
+          <CardContent>
+            <CardTitle>{name}</CardTitle>
+            <CardDescription className="line-clamp-3">
+              {description}
+            </CardDescription>
+          </CardContent>
+        </div>
+      </Link>
 
       <CardFooter className="flex grow items-center justify-between">
         <div>{formatCurrency(priceInCents / 100)}</div>

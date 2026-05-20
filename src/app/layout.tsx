@@ -45,7 +45,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <ClerkProvider>
-          <TooltipProvider delayDuration={1000}>{children}</TooltipProvider>
+          <TooltipProvider delayDuration={500}>{children}</TooltipProvider>
         </ClerkProvider>
         <Toaster position="top-center" />
       </body>

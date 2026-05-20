@@ -64,3 +64,17 @@ export async function getQuantityOfProductInCart(productId: string) {
     select: { quantity: true },
   });
 }
+
+export const getProductBySlug = (slug: string) =>
+  cache(
+    async () => {
+      return db.product.findUnique({
+        where: { slug },
+        include: {
+          images: true,
+        },
+      });
+    },
+    [`product/${slug}`, 'getProductBySlug'],
+    { revalidate: 60 * 60 * 24 }
+  )();

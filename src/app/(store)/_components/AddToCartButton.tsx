@@ -22,6 +22,7 @@ export default function AddToCartButton({
   productName,
   productStock,
   quantityOfProductInCart,
+  ...props
 }: AddToCartButtonProps) {
   function handleAddToCart(productId: string) {
     addToCart(productId);
@@ -36,6 +37,7 @@ export default function AddToCartButton({
           className="hover:bg-gray-800"
           disabled={quantityOfProductInCart >= productStock}
           onClick={() => handleAddToCart(productId)}
+          {...props}
         >
           <ShoppingCart />
         </Button>

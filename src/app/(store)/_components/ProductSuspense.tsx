@@ -12,6 +12,7 @@ export async function ProductSuspense({
     <ProductCard
       key={product.id}
       productId={product.id}
+      slug={product.slug}
       name={product.name}
       description={product.description}
       priceInCents={product.priceInCents}
