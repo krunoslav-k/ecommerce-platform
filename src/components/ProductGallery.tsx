@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import Image from 'next/image';
-
 import { Card } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 

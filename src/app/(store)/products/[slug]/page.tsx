@@ -4,8 +4,8 @@ import {
   getProductBySlug,
   getQuantityOfProductInCart,
 } from '../../lib/products';
-import ProductGallery from '../_components/ProductGallery';
-import ProductInfo from '../_components/ProductInfo';
+import ProductGallery from '../../../../components/ProductGallery';
+import ProductInfo from '@/components/ProductInfo';
 
 export default async function ProductPage({
   params,

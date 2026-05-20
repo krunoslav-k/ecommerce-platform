@@ -120,8 +120,10 @@ async function ProductsTable() {
                   </DropdownMenuTrigger>
 
                   <DropdownMenuContent className="mt-2 mr-4 p-1.5">
-                    <DropdownMenuItem className="mb-1">
-                      <ScanEye /> View details
+                    <DropdownMenuItem className="mb-1" asChild>
+                      <Link href={`products/${product.id}`}>
+                        <ScanEye /> View details
+                      </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link

@@ -8,3 +8,12 @@ export async function getProductData() {
 
   return { inStock, outOfStock };
 }
+
+export async function getProductById(productId: string) {
+  return await db.product.findUnique({
+    where: { id: productId },
+    include: {
+      images: true,
+    },
+  });
+}

@@ -5,8 +5,9 @@ import { Separator } from '@/components/ui/separator';
 import { formatCurrency } from '@/lib/formatters';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { addToCart } from '../../_actions/cart';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Pencil } from 'lucide-react';
+import Link from 'next/link';
+import { addToCart } from '@/app/(store)/_actions/cart';
 
 type ProductInfoProps = {
   product: {
@@ -17,14 +18,18 @@ type ProductInfoProps = {
     stock: number;
   };
 
-  quantityOfProductInCart: number;
+  quantityOfProductInCart?: number;
 };
 
 export default function ProductInfo({
   product,
   quantityOfProductInCart,
 }: ProductInfoProps) {
-  const isInStock = !(quantityOfProductInCart >= product.stock);
+  const isEditMode = quantityOfProductInCart === undefined;
+  const isInStock =
+    quantityOfProductInCart !== undefined
+      ? quantityOfProductInCart < product.stock
+      : true;
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,17 +60,27 @@ export default function ProductInfo({
       </div>
 
       <div className="pt-4">
-        <Button
-          size="lg"
-          className="p-5 hover:bg-gray-800"
-          disabled={quantityOfProductInCart >= product.stock}
-          onClick={() => {
-            addToCart(product.id);
-            toast.success(`Item ${product.name || ''} added to cart`);
-          }}
-        >
-          <ShoppingCart /> Add to Cart
-        </Button>
+        {isEditMode ? (
+          <Button asChild size="lg" className="p-5">
+            <Link href={`${product.id}/edit`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit product
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            className="p-5 hover:bg-gray-800"
+            disabled={quantityOfProductInCart >= product.stock}
+            onClick={() => {
+              addToCart(product.id);
+              toast.success(`Item ${product.name} added to cart`);
+            }}
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            Add to Cart
+          </Button>
+        )}
       </div>
     </div>
   );
