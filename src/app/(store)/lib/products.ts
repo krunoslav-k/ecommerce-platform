@@ -3,6 +3,18 @@ import { getCurrentUser } from '@/lib/auth';
 import { cache } from '@/lib/cache';
 import { getCart } from '@/lib/cart';
 
+export const getAllProducts = cache(
+  () => {
+    return db.product.findMany({
+      where: { stock: { gt: 0 } },
+      orderBy: { name: 'asc' },
+      include: { images: { take: 1 } },
+    });
+  },
+  ['/products', 'getProducts'],
+  { revalidate: 60 * 60 * 24 }
+);
+
 export const getMostPopularProducts = cache(
   () => {
     return db.product.findMany({
