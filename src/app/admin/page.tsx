@@ -5,53 +5,15 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { db } from '@/db/prisma';
 import { formatCurrency, formatNumber } from '@/lib/formatters';
-
-async function getSalesData() {
-  const data = await db.order.aggregate({
-    _sum: { totalInCents: true },
-    _count: true,
-  });
-
-  return {
-    amount: (data._sum.totalInCents || 0) / 100,
-    numberOfSales: data._count,
-  };
-}
-
-{
-  /*async function getUserData() {
-  const [userCount, orderData] = await Promise.all([
-    db.user.count(),
-    db.order.aggregate({
-      _sum: { totalInCents: true },
-    }),
-  ]);
-
-  return {
-    userCount,
-    averageSpentPerUser:
-      userCount === 0
-        ? 0
-        : (orderData._sum.totalInCents || 0) / userCount / 100,
-  };
-}*/
-}
-
-async function getProductData() {
-  const [inStock, outOfStock] = await Promise.all([
-    db.product.count({ where: { stock: { gt: 0 } } }),
-    db.product.count({ where: { stock: 0 } }),
-  ]);
-
-  return { inStock, outOfStock };
-}
+import { getSalesData } from './lib/sales';
+import { getCustomersData } from './lib/customers';
+import { getProductData } from './lib/products';
 
 export default async function AdminDashboard() {
-  const [salesData, productData] = await Promise.all([
+  const [salesData, customersData, productData] = await Promise.all([
     getSalesData(),
-    //getUserData(),
+    getCustomersData(),
     getProductData(),
   ]);
 
@@ -60,17 +22,17 @@ export default async function AdminDashboard() {
       <DashboardCard
         title="Sales"
         description={`${formatNumber(salesData.numberOfSales)} orders`}
-        body={formatCurrency(salesData.amount)}
+        body={`Total revenue: ${formatCurrency(salesData.amount)}`}
       />
       <DashboardCard
         title="Customers"
-        description={`0 customers`}
-        body={`Each customer spends 10€ on average`} //dummy data for testing
+        description={`${customersData.numberOfCustomers} customers`}
+        body={`Each customer spends ${formatCurrency(customersData.averageSpentPerCustomer)} on average`}
       />
       <DashboardCard
         title="Products in stock"
-        description={`${productData.outOfStock} products out of stock`} //dummy data for testing
-        body={`${productData.inStock}`}
+        description={`${productData.outOfStock} products out of stock`}
+        body={`${productData.inStock} products are currently in stock`}
       />
     </div>
   );
