@@ -3,15 +3,27 @@ import { db } from '@/db/prisma';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const slug = searchParams.get('slug');
 
-  if (!slug) {
+  const slug = searchParams.get('slug');
+  const type = searchParams.get('type');
+
+  if (!slug || !type) {
     return NextResponse.json({ exists: false });
   }
 
-  const product = await db.product.findUnique({
-    where: { slug },
-  });
+  let exists = false;
 
-  return NextResponse.json({ exists: !!product });
+  if (type === 'product') {
+    exists = !!(await db.product.findUnique({
+      where: { slug },
+    }));
+  }
+
+  if (type === 'category') {
+    exists = !!(await db.category.findUnique({
+      where: { slug },
+    }));
+  }
+
+  return NextResponse.json({ exists });
 }

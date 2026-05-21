@@ -49,6 +49,7 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
     initialName: product?.name,
     initialSlug: product?.slug,
     checkEndpoint: '/api/check-slug',
+    type: 'product',
   });
 
   return (

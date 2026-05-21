@@ -7,12 +7,14 @@ type UseSlugFormProps = {
   initialName?: string;
   initialSlug?: string;
   checkEndpoint: string;
+  type: 'product' | 'category';
 };
 
 export function useForm({
   initialName = '',
   initialSlug = '',
   checkEndpoint,
+  type,
 }: UseSlugFormProps) {
   const [name, setName] = useState(initialName);
   const [slug, setSlug] = useState(initialSlug);
@@ -21,7 +23,9 @@ export function useForm({
 
   const [apiSlugExists, setApiSlugExists] = useState(false);
 
-  const slugExists = slug !== initialSlug && apiSlugExists;
+  const isEditMode = Boolean(initialSlug);
+
+  const slugExists = apiSlugExists && (!isEditMode || slug !== initialSlug);
 
   useEffect(() => {
     if (!slug || slug === initialSlug) return;
@@ -30,7 +34,7 @@ export function useForm({
 
     const timeout = setTimeout(async () => {
       try {
-        const res = await fetch(`${checkEndpoint}?slug=${slug}`, {
+        const res = await fetch(`${checkEndpoint}?slug=${slug}&type=${type}`, {
           signal: controller.signal,
         });
 
@@ -43,7 +47,7 @@ export function useForm({
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [slug, initialSlug, checkEndpoint]);
+  }, [slug, initialSlug, checkEndpoint, type]);
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;

@@ -40,6 +40,7 @@ export default function CategoryForm({ category }: CategoryFormProps) {
     initialName: category?.name,
     initialSlug: category?.slug,
     checkEndpoint: '/api/check-slug',
+    type: 'category',
   });
 
   return (
