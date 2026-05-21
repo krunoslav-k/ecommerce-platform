@@ -3,55 +3,72 @@
 import generateSlug from '@/lib/generateSlug';
 import { useEffect, useState } from 'react';
 
-export function useProductForm(enteredName?: string, enteredSlug?: string) {
-  const [productName, setProductName] = useState(enteredName || '');
-  const [slug, setSlug] = useState(enteredSlug || '');
+type UseSlugFormProps = {
+  initialName?: string;
+  initialSlug?: string;
+  checkEndpoint: string;
+};
+
+export function useForm({
+  initialName = '',
+  initialSlug = '',
+  checkEndpoint,
+}: UseSlugFormProps) {
+  const [name, setName] = useState(initialName);
+  const [slug, setSlug] = useState(initialSlug);
+
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
+
   const [apiSlugExists, setApiSlugExists] = useState(false);
-  const slugExists = slug !== enteredSlug && apiSlugExists;
+
+  const slugExists = slug !== initialSlug && apiSlugExists;
 
   useEffect(() => {
-    if (!slug || slug === enteredSlug) {
-      return;
-    }
+    if (!slug || slug === initialSlug) return;
 
     const controller = new AbortController();
+
     const timeout = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/check-slug?slug=${slug}`, {
+        const res = await fetch(`${checkEndpoint}?slug=${slug}`, {
           signal: controller.signal,
         });
 
         const data = await res.json();
-
         setApiSlugExists(data.exists);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (err) {}
+      } catch {}
     }, 400);
 
     return () => {
       clearTimeout(timeout);
       controller.abort();
     };
-  }, [slug, enteredSlug]);
+  }, [slug, initialSlug, checkEndpoint]);
 
   function handleNameChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
 
-    setProductName(value);
+    setName(value);
 
     if (!isSlugManuallyEdited) {
       setSlug(generateSlug(value));
     }
+
     setIsSlugManuallyEdited(false);
   }
 
   function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
     setIsSlugManuallyEdited(true);
-
-    const value = generateSlug(e.target.value);
-    setSlug(value);
+    setSlug(generateSlug(e.target.value));
   }
 
-  return { productName, handleNameChange, slug, handleSlugChange, slugExists };
+  return {
+    name,
+    setName,
+    slug,
+    setSlug,
+    handleNameChange,
+    handleSlugChange,
+    slugExists,
+  };
 }

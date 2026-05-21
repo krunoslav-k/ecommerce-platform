@@ -1,6 +1,6 @@
 'use client';
 
-//prettier-ignore
+// prettier-ignore
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,14 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/formatters';
 import { useActionState, useState } from 'react';
-import { addProduct, editProduct } from '../../_actions/products';
 import { useFormStatus } from 'react-dom';
 import ImageUploader from './ImageUploader';
 import ErrorMessage from '../../_components/FormError';
-import { useProductForm } from '@/hooks/useProductForm';
 import { cn } from '@/lib/utils';
 import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';
 import { Product } from '@prisma/client';
+import { addProduct, editProduct } from '../../_actions/products';
+import { useForm } from '@/hooks/useForm';
 
 type ProductFormProps = {
   categories: {
@@ -29,15 +29,27 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
   const [priceInCents, setPriceInCents] = useState(
     product?.priceInCents.toString() ?? ''
   );
+
   const [categoryId, setCategoryId] = useState(product?.categoryId ?? '');
 
-  const { productName, handleNameChange, slug, handleSlugChange, slugExists } =
-    useProductForm(product?.name, product?.slug);
   const [state, formAction] = useActionState(
     product?.id ? editProduct.bind(null, product.id) : addProduct,
     {}
   );
+
   const { markAsModified, getFieldError } = useFieldErrorHiding(state);
+
+  const {
+    name: productName,
+    handleNameChange,
+    slug,
+    handleSlugChange,
+    slugExists,
+  } = useForm({
+    initialName: product?.name,
+    initialSlug: product?.slug,
+    checkEndpoint: '/api/check-slug',
+  });
 
   return (
     <form action={formAction} noValidate className="space-y-8">
@@ -45,6 +57,7 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
         {/* NAME */}
         <div className="space-y-2">
           <Label htmlFor="name">Name</Label>
+
           <Input
             id="name"
             name="name"
@@ -56,22 +69,25 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
             }}
             required
           />
+
           <ErrorMessage error={getFieldError('name')} />
         </div>
 
         {/* SLUG */}
         <div className="space-y-2">
           <Label htmlFor="slug">Slug</Label>
+
           <Input
             id="slug"
             name="slug"
-            required
             value={slug}
             onChange={(e) => {
               handleSlugChange(e);
               markAsModified('slug');
             }}
+            required
           />
+
           <ErrorMessage error={getFieldError('slug')} />
 
           {slugExists && slug !== product?.slug && (
@@ -93,9 +109,9 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
             type="number"
             min="0"
             name="stock"
-            required
-            onChange={() => markAsModified('stock')}
             defaultValue={product?.stock}
+            onChange={() => markAsModified('stock')}
+            required
           />
           <ErrorMessage error={getFieldError('stock')} />
         </div>
@@ -106,9 +122,9 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
           <Textarea
             id="description"
             name="description"
-            required
-            onChange={() => markAsModified('description')}
             defaultValue={product?.description}
+            onChange={() => markAsModified('description')}
+            required
           />
           <ErrorMessage error={getFieldError('description')} />
         </div>
@@ -116,27 +132,31 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
         {/* PRICE */}
         <div className="space-y-2">
           <Label htmlFor="priceInCents">Price</Label>
+
           <Input
             type="number"
             min="0"
+            id="priceInCents"
+            name="priceInCents"
             value={priceInCents}
             onChange={(e) => {
               setPriceInCents(e.target.value);
               markAsModified('priceInCents');
             }}
-            id="priceInCents"
-            name="priceInCents"
             required
           />
+
           <p className="ml-2 text-sm text-gray-500">
             {formatCurrency(priceInCents ? Number(priceInCents) / 100 : 0)}
           </p>
+
           <ErrorMessage error={getFieldError('priceInCents')} />
         </div>
 
         {/* CATEGORY */}
         <div className="space-y-2">
           <Label>Category</Label>
+
           <Select
             value={categoryId || ''}
             onValueChange={(val) => {
@@ -155,13 +175,15 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
 
             <SelectContent className="mt-1 p-1.5">
               {categories.map((c) => (
-                <SelectItem key={c.id} value={c.id} className="p-1.5">
+                <SelectItem key={c.id} value={c.id}>
                   {c.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
           <input type="hidden" name="categoryId" value={categoryId} />
+
           <ErrorMessage error={getFieldError('categoryId')} />
         </div>
       </div>
@@ -175,9 +197,7 @@ export default function ProductForm({ categories, product }: ProductFormProps) {
         <ErrorMessage error={getFieldError('images')} />
       </div>
 
-      <div className="mt-2">
-        <SubmitButton isEditing={!!product} />
-      </div>
+      <SubmitButton isEditing={!!product} />
     </form>
   );
 }

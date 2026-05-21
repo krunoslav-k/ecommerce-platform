@@ -6,10 +6,10 @@ import { Label } from '@/components/ui/label';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';
-import { useProductForm } from '@/hooks/useProductForm';
 import { Category } from '@prisma/client';
 import ErrorMessage from '../../_components/FormError';
 import { addCategory, editCategory } from '../../_actions/categories';
+import { useForm } from '@/hooks/useForm';
 
 type CategoryFormProps = {
   category?: Category | null;
@@ -31,12 +31,16 @@ export default function CategoryForm({ category }: CategoryFormProps) {
   const { markAsModified, getFieldError } = useFieldErrorHiding(state);
 
   const {
-    productName: categoryName,
+    name: categoryName,
     handleNameChange,
     slug,
     handleSlugChange,
     slugExists,
-  } = useProductForm(category?.name, category?.slug);
+  } = useForm({
+    initialName: category?.name,
+    initialSlug: category?.slug,
+    checkEndpoint: '/api/check-slug',
+  });
 
   return (
     <form action={formAction} noValidate className="space-y-8">
@@ -72,7 +76,6 @@ export default function CategoryForm({ category }: CategoryFormProps) {
             value={slug}
             onChange={(e) => {
               handleSlugChange(e);
-
               markAsModified('slug');
             }}
           />
