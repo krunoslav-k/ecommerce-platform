@@ -6,7 +6,9 @@ import Link from 'next/link';
 
 export default async function CartNavbarButton() {
   const userId = await getCurrentUser();
-
+  if (!userId) {
+    return 0;
+  }
   const cart = await getCart(userId);
 
   const count =
