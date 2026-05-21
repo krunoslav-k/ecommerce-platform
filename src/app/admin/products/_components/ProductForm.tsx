@@ -1,17 +1,17 @@
 'use client';
 
+//prettier-ignore
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-//prettier-ignore
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/lib/formatters';
 import { useActionState, useState } from 'react';
 import { addProduct, editProduct } from '../../_actions/products';
 import { useFormStatus } from 'react-dom';
 import ImageUploader from './ImageUploader';
-import ErrorMessage from './FormError';
+import ErrorMessage from '../../_components/FormError';
 import { useProductForm } from '@/hooks/useProductForm';
 import { cn } from '@/lib/utils';
 import { useFieldErrorHiding } from '@/hooks/useFieldErrorHiding';

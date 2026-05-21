@@ -4,7 +4,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Trash } from 'lucide-react';
 import { useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { deleteProduct } from '../../_actions/products';
+import { deleteCategory } from '../../_actions/categories';
 
 export default function DeleteDropdownItem({
   id,
@@ -22,7 +22,7 @@ export default function DeleteDropdownItem({
       disabled={disabled || isPending}
       onClick={() =>
         startTransition(async () => {
-          await deleteProduct(id);
+          await deleteCategory(id);
           router.refresh();
         })
       }
